@@ -16,7 +16,7 @@ android/.cxx
 android/local.properties
 
 # Arduino
-firmware/build/
+/firmware/esp32c3/build/
 *.bin
 *.elf
 *.hex
