@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">Remote Switch</string>
+    <string name="title_activity_help">activity_help</string>
+    <string name="status_scanning">Status: Scanning...</string>
+    <string name="status_not_bonded">Status: Not bonded.</string>
+    <string name="status_bonded_disconnected">Status: Bonded to %s. Disconnected</string>
+    <string name="status_found_device">Status: Found %s.</string>
+    <string name="status_bonding">Status: Bonded to %s. Disconnected. Initiating bond...</string>
+    <string name="status_connected">Status: Connected.</string>
+    <string name="no_device_to_connect">No device to connect to. Please scan first.</string>
+    <string name="status_connecting">Status: Connecting...</string>
+    <string name="need_permission">Need Permission.</string>
+    <string name="scan_timeout">Scan timed out. Device not found.</string>
+    <string name="scan_failed">Scan failed with error code: %s</string>
+    <string name="connect_failed">Device is null.</string>
+    <string name="bluetooth_permission_failed">Bluetooth Connect permission not granted.</string>
+    <string name="permissions_missing">Permissions missing for state change.</string>
+    <string name="time_synced">Time Synced Successfully.</string>
+    <string name="device_cleared">Device Information Cleared.</string>
+    <string name="unbound_failed">Failed to unbound the device. Please unbound it manually and restart the app.</string>
+</resources>
