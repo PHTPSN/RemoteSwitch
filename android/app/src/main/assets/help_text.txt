@@ -1,0 +1,6 @@
+1. Scan: The first time you use the app, allow the asked permissions. Tap Scan. The app will look for a BLE device named "Remote Switch". If you can't find your device, please try enabling location permissions manually in your system settings.
+2. Bond: The app will automatically initiate a bonding request. Accept the request on your phone. Once bonded, the app will remember the device. We set a big advertising interval to conserve battery. If you can find the device but fail to bond with it, you can try to again by tapping scan.
+3. Connect: Tap Connect. The app will establish a connection and sync the time with the device automatically.
+4. Control: Once the status is "Connected", use the ON and OFF buttons to control the switch. Tap Disconnect after using to save battery as long as you remember, althought the device will automatically do this a few minutes later.
+5. Reset: Tap Reset to un-bond the device. You will need to scan again after a reset. But it will not delete the permissions.
+6. Other Instructions: If the app is stopped because of "Need Permission", please allow all bluetooth permissions manually. You are not able to find or connect to the device when another phone is connected to it.

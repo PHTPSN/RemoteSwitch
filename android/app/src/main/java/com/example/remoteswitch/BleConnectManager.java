@@ -5,11 +5,11 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
-import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.content.pm.PackageManager;
+
 import android.util.Log;
 
 import androidx.core.app.ActivityCompat;
@@ -35,13 +35,10 @@ public class BleConnectManager {
     public static final UUID CHARACTERISTIC_UUID_SERVOSIGNAL = uuidFromShortUuid16(0x2A56);
 
     // This UUID is standard for enabling notifications/indications
-    public static final UUID CLIENT_CHARACTERISTIC_CONFIG_UUID = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb");
-
     private final Context context;
     private final BluetoothDevice device;
     private final OnDeviceConnectedListener listener;
     private BluetoothGatt bluetoothGatt;
-
     private BluetoothGattCharacteristic phoneTimeCharacteristic;
     private BluetoothGattCharacteristic servoSignalCharacteristic;
 
@@ -64,11 +61,11 @@ public class BleConnectManager {
 
     public void connect() {
         if (device == null) {
-            listener.onConnectFailed("Device is null.");
+            listener.onConnectFailed("Device is null. Please reset the app.");
             return;
         }
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-            listener.onConnectFailed("Bluetooth Connect permission not granted.");
+            listener.onConnectFailed(context.getString(R.string.need_permission));
             return;
         }
         Log.d(TAG, "Connecting to GATT server.");
@@ -92,7 +89,7 @@ public class BleConnectManager {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-                listener.onConnectFailed("Permissions missing for state change.");
+                listener.onConnectFailed(context.getString(R.string.need_permission));
                 return;
             }
 
@@ -103,7 +100,16 @@ public class BleConnectManager {
             } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                 Log.i(TAG, "Disconnected from GATT server.");
                 listener.onDeviceDisconnected();
-                close(); // Clean up resources
+
+                // Clean up resources
+                if (bluetoothGatt == null) {
+                    return;
+                }
+                if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                    return;
+                }
+                bluetoothGatt.close();
+                bluetoothGatt = null;
             }
         }
 
@@ -112,11 +118,10 @@ public class BleConnectManager {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 Log.w(TAG, "Services discovered.");
 
-                // 打印所有服务
+                // print all services and characteristics
                 for (BluetoothGattService service : gatt.getServices()) {
                     Log.d(TAG, "Service UUID: " + service.getUuid());
 
-                    // 打印每个服务的特征
                     for (BluetoothGattCharacteristic characteristic : service.getCharacteristics()) {
                         Log.d(TAG, "  Characteristic UUID: " + characteristic.getUuid());
                     }
@@ -165,17 +170,6 @@ public class BleConnectManager {
             }
         }
     };
-
-    public void close() {
-        if (bluetoothGatt == null) {
-            return;
-        }
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        bluetoothGatt.close();
-        bluetoothGatt = null;
-    }
 
     public void writeCurrentTime() {
         if (phoneTimeCharacteristic == null || bluetoothGatt == null) {

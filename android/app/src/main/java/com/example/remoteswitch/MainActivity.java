@@ -233,6 +233,7 @@ public class MainActivity extends AppCompatActivity
     public void onConnectFailed(String errorMessage) {
         runOnUiThread(() -> {
             statusTextView.setText(getString(R.string.status_bonded_disconnected, DEVICE_NAME));
+            Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
             connectButton.setEnabled(true);
             disconnectButton.setEnabled(false);
             onButton.setEnabled(false);

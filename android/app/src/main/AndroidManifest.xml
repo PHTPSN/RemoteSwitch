@@ -40,12 +40,6 @@
         <activity
             android:name=".HelpActivity"
             android:exported="false" />
-
-        <service
-            android:name=".BluetoothMonitorService"
-            android:enabled="true"
-            android:exported="false"
-            android:foregroundServiceType="connectedDevice" />
     </application>
 
 </manifest>
