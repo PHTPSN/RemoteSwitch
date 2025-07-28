@@ -5,6 +5,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/PHTPSN/RemoteSwitch)](https://github.com/PHTPSN/RemoteSwitch/releases)
 
+[中文版使用说明](中文版使用说明.md)
+
 **Tired of getting off and on the ladder when you finally put down your phone and ready to fall into a sweet dream?** This is a project to remotely control a physical switch using an Android application via Bluetooth Low Energy (BLE). The system uses an ESP32-C3 microcontroller to operate two servo motors and features power-saving deep sleep functionality.
 
 ## Features
@@ -48,7 +50,7 @@ This project is a monorepo containing all necessary code and firmware:
 - The **lower servo** (controls OFF) connects to **GPIO 4**.
 - The **upper servo** (controls ON) connects to **GPIO 2**.
 
-Remark: It's just an example of the case that the switch is on when its top is pressed and servos are on the right of the switch. You may adjust some details in `firmware/Remote_Switch_ESP32.ino` according to your own demand referring to [Adjustments](#adjust). You can also flash directly by
+Remark: It's just an example of the case that the switch is on when its top is pressed and servos are on the right of the switch. You may adjust some details in `firmware/Remote_Switch_ESP32.ino` according to your own demand referring to [Adjustments](#adjustments). You can also flash directly by
 `
 esptool.py --port <serial_port> write_flash 0x1000 esp32c3.ino.bin
 `.
@@ -60,52 +62,52 @@ esptool.py --port <serial_port> write_flash 0x1000 esp32c3.ino.bin
 1. **Prerequisites:**
     - Install the [Arduino IDE](https://www.arduino.cc/en/software).
     - Add ESP32 board support to the Arduino IDE. Follow this [guide](https://docs.espressif.com/projects/arduino-esp32/en/latest/installing.html). Select the proper board.
-1. **Install Libraries:**
+2. **Install Libraries:**
     - Open the Library Manager (`Sketch > Include Library > Manage Libraries...`).
     - Install `ESP32Servo`.
-1. **Adjust the Code**
-1. **Flash the Firmware:**
+3. **Adjust the Code**
+4. **Flash the Firmware:**
     - Open `firmware/esp32ce.ino` in the Arduino IDE.
     - Select the correct COM port.
     - Click **Upload**.
 
-### Adjustments {#adjust}
+### Adjustments
 
 Here's the position of some common setup `firmware/Remote_Switch_ESP32.ino` you may use:
 
 1. **Servo Pins:**
 
-```cpp
-#define SERVO_A_PIN 4 // lower servo, control off
-#define SERVO_B_PIN 2 // upper servo, control on
-```
+    ```cpp
+    #define SERVO_A_PIN 4 // lower servo, control off
+    #define SERVO_B_PIN 2 // upper servo, control on
+    ```
 
 1. **Sleep Period:**
 
-```cpp
-const long SLEEP_DURATION = 11 * 3600; // 11 hours
-const long SLEEP_WINDOW_START = 10 * 3600; // 10am
-const long SLEEP_WINDOW_END = 21 * 3600; // 9pm
-```
+    ```cpp
+    const long SLEEP_DURATION = 11 * 3600; // 11 hours
+    const long SLEEP_WINDOW_START = 10 * 3600; // 10am
+    const long SLEEP_WINDOW_END = 21 * 3600; // 9pm
+    ```
 
 1. **Auto-disconnect Time:**
 
-```cpp
-const long DISCONNECT_TIME = 3 * 60 * 1000; // 3 mins
-```
+    ```cpp
+    const long DISCONNECT_TIME = 3 * 60 * 1000; // 3 mins
+    ```
 
 1. **Rotation Angle:** The first angle is the rotation angle, and the second one is the restoration position angle.
 
-```cpp
-if(value == "1") {
-    Serial.println("Received '1'");
-    activateServo(SERVO_B_PIN, servoB, 0, 30); // Turn on, the upper servo rotate 30°
-} 
-else if(value == "0") {
-    Serial.println("Received '0'");
-    activateServo(SERVO_A_PIN, servoA, 30, 0);  // Turn off, the lower servo rotate 30°
-}
-```
+    ```cpp
+    if(value == "1") {
+        Serial.println("Received '1'");
+        activateServo(SERVO_B_PIN, servoB, 0, 30); // Turn on, the upper servo rotate 30°
+    } 
+    else if(value == "0") {
+        Serial.println("Received '0'");
+        activateServo(SERVO_A_PIN, servoA, 30, 0);  // Turn off, the lower servo rotate 30°
+    }
+    ```
 
 ## How to Use the App
 
@@ -149,7 +151,7 @@ We welcome contributions! Please follow this workflow:
 1. **Code:** Make your changes to the app and/or firmware. A single commit should represent a consistent state of the entire project.
 1. **Pull Request:** Push your branch to GitHub and open a Pull Request against the `main` branch.
 
-For more detailed information on the Android app's architecture, see `android-app/ANDROID_APP_DOC.md`.
+For more detailed information on the Android app's architecture, see [**`android/ANDROID_APP_DOC.md`**](./android/ANDROID_APP_DOC.md).
 
 ## License
 
