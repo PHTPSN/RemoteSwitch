@@ -1,6 +1,6 @@
-# Android App Documentation - Remote Switch Controller
+# Android App Documentation - Remote Switch
 
-This document provides a technical overview of the Android application for the Remote Switch Controller project.
+This document provides a technical overview of the Android application for the Remote Switch project.
 
 ## Technical Specifications
 
