@@ -134,7 +134,7 @@ The app is designed with a modular approach, separating responsibilities into di
    - `onCharacteristicWrite` logs the sent command
    - ESP32 receives value and activates corresponding servo
 
-#### 5. Help Page
+#### 4. Help Page
 
 1. User taps **Help** button in `MainActivity`
 1. `MainActivity` launches `HelpActivity` via explicit Intent
@@ -152,7 +152,7 @@ The app is designed with a modular approach, separating responsibilities into di
    - Handled automatically via action bar back button
    - Returns to `MainActivity` preserving state
 
-#### 6. Permission Request
+#### 5. Permission Request
 
 1. Initial permission check in `MainActivity.onCreate()`:
    - Calls `requestBluetoothPermissions()`
