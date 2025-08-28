@@ -27,10 +27,12 @@ unsigned long connectStartTime = 0; // ms
 RTC_DATA_ATTR bool timeSynced = false;
 RTC_DATA_ATTR long localTime = 0; // s, mod 86400
 unsigned long localTime_millis = 0; // ms
-const long SLEEP_DURATION = 11 * 3600; // 11 hours
+unsigned long SLEEP_DURATION = 0; // s
 const long SLEEP_WINDOW_START = 10 * 3600; // 10am
-const long SLEEP_WINDOW_END = 21 * 3600; // 9pm
-const long DISCONNECT_TIME = 3 * 60 * 1000; // 3 mins
+const long SLEEP_WINDOW_END = 22 * 3600; // 10pm
+const long SLEEP_WINDOW_START_MIDNIGHT = 2 * 3600; // 2am
+const long SLEEP_WINDOW_END_MIDNIGHT = 7 * 3600; // 7am
+const long DISCONNECT_TIME = 1 * 60 * 1000; // 1 mins
 
 class BLEController {
 public:
@@ -43,6 +45,7 @@ public:
 
   void init() {
     BLEDevice::init(DEVICE_NAME);
+    BLEDevice::setPower(ESP_PWR_LVL_N9); // Set Tx power to -9dBm (lower than default)
     pServer = BLEDevice::createServer();
     pServer->setCallbacks(new MyServerCallbacks(this));
     
@@ -69,8 +72,8 @@ public:
     
     BLEAdvertising *pAdvertising = BLEDevice::getAdvertising();
     pAdvertising->setScanResponse(true);  // Allow to be discovered by scanning
-    pAdvertising->setMinInterval(0x0200);  // 512*0.625ms=320ms
-    pAdvertising->setMaxInterval(0x0400); // 1028*0.625ms=640ms
+    pAdvertising->setMinInterval(0x0600);  // 1536*0.625ms=960ms
+    pAdvertising->setMaxInterval(0x0800); // 2048*0.625ms=1280ms
     BLEDevice::startAdvertising();
     /**/
   }
@@ -170,7 +173,7 @@ void setup() {
 void loop() {
   delay(5000);
   //Serial.println(String(localTime / 3600) + String((localTime % 3600) / 60) + String((localTime % 60)));
-  // Auto dinconnect after about 3 mins of connecting
+  // Auto dinconnect after about 1 mins of connecting
   if(connectStartTime > 0 && millis() - connectStartTime >= DISCONNECT_TIME && MyBLEController->pServer) {
     if (MyBLEController->pServer->getConnectedCount() > 0) {
       MyBLEController->pServer->disconnect(MyBLEController->connId);
@@ -181,10 +184,26 @@ void loop() {
   localTime += (localTime_millis_new - localTime_millis) / 1000;
   localTime_millis = localTime_millis_new;
 
-  if(timeSynced && localTime % 86400 >= SLEEP_WINDOW_START && localTime % 86400 <= SLEEP_WINDOW_END && millis() - lastOperationTime >= 5 * 60 * 1000) {
+  if(timeSynced && 
+  localTime % 86400 >= SLEEP_WINDOW_START && localTime % 86400 <= SLEEP_WINDOW_END && 
+  millis() - lastOperationTime >= 5 * 60 * 1000) {
     BLEDevice::deinit();
     Serial.println("Ready to enter deep sleep.");
 
+    SLEEP_DURATION = SLEEP_WINDOW_END - localTime % 86400;
+    localTime += SLEEP_DURATION;
+
+    esp_sleep_enable_timer_wakeup(SLEEP_DURATION * 1000000ULL); // microsecond
+    esp_deep_sleep_start();
+  }
+
+  if(timeSynced && 
+  localTime % 86400 >= SLEEP_WINDOW_START_MIDNIGHT && localTime % 86400 <= SLEEP_WINDOW_END_MIDNIGHT && 
+  millis() - lastOperationTime >= 5 * 60 * 1000) {
+    BLEDevice::deinit();
+    Serial.println("Ready to enter deep sleep.");
+
+    SLEEP_DURATION = SLEEP_WINDOW_END_MIDNIGHT - localTime % 86400;
     localTime += SLEEP_DURATION;
 
     esp_sleep_enable_timer_wakeup(SLEEP_DURATION * 1000000ULL); // microsecond

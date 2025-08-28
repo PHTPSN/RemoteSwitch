@@ -14,7 +14,7 @@
 - **BLE Remote Control:** Securely turn a switch ON or OFF in one tap from the Android app using standard BLE services.
 - **Automatic Time Sync:** The ESP32's internal clock is synchronized with the phone's time upon connection to manage sleep schedules.
 - **Power Saving:** Under a 3000mA lithium battery, the device can operate for 1 to 2 months.
-  - The device enters a deep sleep mode during inactive hours (e.g., 10am - 9pm) to conserve battery. You will not able to control the device by the phone during this period. But don't worry, you can press the **RST** button **on ESP32** to erase time memory. The device won't enter deep sleep before fetching the time from a phone, nor in the first several minutes of the last operation.
+  - The device enters a deep sleep mode during inactive hours (e.g., 10am - 10pm and 2am - 7am) to conserve battery. You will not able to control the device by the phone during this period. But don't worry, you can press the **RST** button **on ESP32** to erase time memory. The device won't enter deep sleep before fetching the time from a phone, nor in the first several minutes of the last operation.
   - The device will automatically disconnect from the phone after a fixed time of connection.
 
 - **Persistent Bonding:** The Android app remembers the bonded device, allowing for quick reconnections without needing to scan every time, even when the **ESP32** is reset. But you can unbond from the device by **reset** on the android app or do it manually in phone settings.
@@ -61,7 +61,8 @@ esptool.py --port <serial_port> write_flash 0x1000 esp32c3.ino.bin
 
 1. **Prerequisites:**
     - Install the [Arduino IDE](https://www.arduino.cc/en/software).
-    - Add ESP32 board support to the Arduino IDE. Follow this [guide](https://docs.espressif.com/projects/arduino-esp32/en/latest/installing.html). Select the proper board.
+    - Add ESP32 board support to the Arduino IDE. Follow this [guide](https://docs.espressif.com/projects/arduino-esp32/en/latest/installing.html). Version: esp32 **3.2.0**. (Don't install newer version because BLESecurity is totally different then!)
+    - Select the proper board.
 2. **Install Libraries:**
     - Open the Library Manager (`Sketch > Include Library > Manage Libraries...`).
     - Install `ESP32Servo`.
@@ -85,15 +86,16 @@ Here's the position of some common setup `firmware/Remote_Switch_ESP32.ino` you 
 1. **Sleep Period:**
 
     ```cpp
-    const long SLEEP_DURATION = 11 * 3600; // 11 hours
     const long SLEEP_WINDOW_START = 10 * 3600; // 10am
-    const long SLEEP_WINDOW_END = 21 * 3600; // 9pm
+    const long SLEEP_WINDOW_END = 22 * 3600; // 10pm
+    const long SLEEP_WINDOW_START_MIDNIGHT = 2 * 3600; // 2am
+    const long SLEEP_WINDOW_END_MIDNIGHT = 7 * 3600; // 7am
     ```
 
 1. **Auto-disconnect Time:**
 
     ```cpp
-    const long DISCONNECT_TIME = 3 * 60 * 1000; // 3 mins
+    const long DISCONNECT_TIME = 1 * 60 * 1000; // 1 mins
     ```
 
 1. **Rotation Angle:** The first angle is the rotation angle, and the second one is the restoration position angle.
@@ -124,6 +126,7 @@ Remark: Android 10+ should not need location permission according to official in
 
 1. **Prerequisites:**
     - Install [Android Studio](https://developer.android.com/studio).
+
 1. **Get the Code (Sparse Checkout):**
     To avoid downloading the firmware files, clone the repository using Git Sparse Checkout. This is the recommended method.
 
